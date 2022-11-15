@@ -1,7 +1,4 @@
-use cosmwasm_std::{Binary, Empty};
-use cw721::{ContractInfoResponse, Expiration};
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use cosmwasm_std::Empty;
 
 // We use the execute messages from `cw721_base`
 pub type InstantiateMsg = cw721_base::InstantiateMsg;

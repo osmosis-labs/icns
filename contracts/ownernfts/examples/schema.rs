@@ -3,7 +3,7 @@ use std::fs::create_dir_all;
 
 use cosmwasm_schema::{export_schema, remove_schemas, schema_for};
 
-use ownernfts::msg::{ExecuteMsg, GetCountResponse, InstantiateMsg, QueryMsg};
+use ownernfts::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use ownernfts::state::State;
 
 fn main() {
@@ -16,5 +16,4 @@ fn main() {
     export_schema(&schema_for!(ExecuteMsg), &out_dir);
     export_schema(&schema_for!(QueryMsg), &out_dir);
     export_schema(&schema_for!(State), &out_dir);
-    export_schema(&schema_for!(GetCountResponse), &out_dir);
 }

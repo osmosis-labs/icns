@@ -1,15 +1,33 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "ExecuteMsg",
-  "anyOf": [
+  "oneOf": [
     {
       "type": "object",
       "required": [
-        "increment"
+        "request_verification"
       ],
       "properties": {
-        "increment": {
-          "type": "object"
+        "request_verification": {
+          "type": "object",
+          "required": [
+            "address",
+            "tweet_id",
+            "twitter_handle"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "tweet_id": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            },
+            "twitter_handle": {
+              "type": "string"
+            }
+          }
         }
       },
       "additionalProperties": false
@@ -17,18 +35,43 @@
     {
       "type": "object",
       "required": [
-        "reset"
+        "verify"
       ],
       "properties": {
-        "reset": {
+        "verify": {
           "type": "object",
           "required": [
-            "count"
+            "approved",
+            "request_id"
           ],
           "properties": {
-            "count": {
+            "approved": {
+              "type": "boolean"
+            },
+            "request_id": {
               "type": "integer",
-              "format": "int32"
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "change_verifier"
+      ],
+      "properties": {
+        "change_verifier": {
+          "type": "object",
+          "required": [
+            "new_verifier"
+          ],
+          "properties": {
+            "new_verifier": {
+              "type": "string"
             }
           }
         }

@@ -1,3 +1,4 @@
+use cosmwasm_std::Addr;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +15,7 @@ pub enum ExecuteMsg {
     RequestVerification {
         twitter_handle: String,
         address: String,
-        tweet_id: u64,
+        tweet_id: String,
     },
 
     // verifier only
@@ -25,6 +26,9 @@ pub enum ExecuteMsg {
     ChangeVerifier {
         new_verifier: String,
     },
+    SetOwnerNftsAddress {
+        ownernfts_address: String,
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]

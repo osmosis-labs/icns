@@ -3,15 +3,26 @@
   "title": "State",
   "type": "object",
   "required": [
-    "count",
-    "owner"
+    "next_request_id",
+    "verifier"
   ],
   "properties": {
-    "count": {
+    "next_request_id": {
       "type": "integer",
-      "format": "int32"
+      "format": "uint64",
+      "minimum": 0.0
     },
-    "owner": {
+    "nft_address": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Addr"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verifier": {
       "$ref": "#/definitions/Addr"
     }
   },
