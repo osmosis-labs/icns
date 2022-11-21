@@ -53,7 +53,9 @@ pub fn execute(
             approved,
         } => verify(deps, env, info, request_id, approved),
         ExecuteMsg::ChangeVerifier { new_verifier } => change_verifier(deps, info, new_verifier),
-        ExecuteMsg::SetOwnerNftsAddress { ownernfts_address } => set_ownernfts_address(deps, info, ownernfts_address),
+        ExecuteMsg::SetOwnerNftsAddress { ownernfts_address } => {
+            set_ownernfts_address(deps, info, ownernfts_address)
+        }
     }
 }
 
@@ -139,14 +141,18 @@ pub fn change_verifier(
         .add_attribute("new_verifier", new_verifier))
 }
 
-pub fn set_ownernfts_address(deps: DepsMut, info: MessageInfo, ownernfts_address: String) -> Result<Response, ContractError> {
+pub fn set_ownernfts_address(
+    deps: DepsMut,
+    info: MessageInfo,
+    ownernfts_address: String,
+) -> Result<Response, ContractError> {
     let mut state = STATE.load(deps.storage)?;
 
     if info.sender != state.verifier {
         return Err(ContractError::Unauthorized {});
     }
 
-    state.ownernfts_address = Some (deps.api.addr_validate(&ownernfts_address)?);
+    state.ownernfts_address = Some(deps.api.addr_validate(&ownernfts_address)?);
 
     STATE.save(deps.storage, &state);
 

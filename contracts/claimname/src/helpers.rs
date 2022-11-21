@@ -13,7 +13,9 @@ use crate::{
 };
 
 pub fn must_get_ownernft_address(state: State) -> Result<Addr, ContractError> {
-    state.ownernfts_address.ok_or(ContractError::NFTContractNotInitialized {})
+    state
+        .ownernfts_address
+        .ok_or(ContractError::NFTContractNotInitialized {})
 }
 
 // /// CwTemplateContract is a wrapper around Addr that provides a lot of helpers

@@ -96,5 +96,6 @@ fn get_name_resolution(
     Err(StdError::GenericErr {
         msg: String::from("Not implemented"),
     })
-    // name_to_address.load(deps.storage, name)
 }
+
+// TODO: Add tests

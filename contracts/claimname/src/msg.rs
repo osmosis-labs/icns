@@ -28,7 +28,7 @@ pub enum ExecuteMsg {
     },
     SetOwnerNftsAddress {
         ownernfts_address: String,
-    }
+    },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
