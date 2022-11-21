@@ -1,14 +1,13 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_binary, Binary, CosmosMsg, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
-    WasmMsg,
+    to_binary, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult, WasmMsg,
 };
 use cw2::set_contract_version;
 use ownernfts::msg::{ExecuteMsg as ExecuteMsgNFT, MintMsg};
 
 use crate::error::ContractError;
-use crate::helpers::must_get_nft_address;
+use crate::helpers::must_get_ownernft_address;
 use crate::msg::{ExecuteMsg, GetVerificationRequestResponse, InstantiateMsg, QueryMsg};
 use crate::state::{State, VerificationRequest, REQUESTS, STATE};
 
@@ -20,12 +19,12 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub fn instantiate(
     deps: DepsMut,
     _env: Env,
-    info: MessageInfo,
+    _info: MessageInfo,
     msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     let state = State {
         verifier: deps.api.addr_validate(&msg.verifier)?,
-        nft_address: None,
+        ownernfts_address: None,
         next_request_id: 0,
     };
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
@@ -54,6 +53,9 @@ pub fn execute(
             approved,
         } => verify(deps, env, info, request_id, approved),
         ExecuteMsg::ChangeVerifier { new_verifier } => change_verifier(deps, info, new_verifier),
+        ExecuteMsg::SetOwnerNftsAddress { ownernfts_address } => {
+            set_ownernfts_address(deps, info, ownernfts_address)
+        }
     }
 }
 
@@ -62,7 +64,7 @@ pub fn request_verification(
     env: Env,
     twitter_handle: String,
     address: String,
-    tweet_id: u64,
+    tweet_id: String,
 ) -> Result<Response, ContractError> {
     let mut state = STATE.load(deps.storage)?;
 
@@ -73,7 +75,7 @@ pub fn request_verification(
         expiration_time: env.block.time.plus_seconds(604800),
     };
 
-    REQUESTS.save(deps.storage, state.next_request_id, &request);
+    REQUESTS.save(deps.storage, state.next_request_id, &request)?;
 
     state.next_request_id += 1;
     STATE.save(deps.storage, &state)?;
@@ -83,7 +85,7 @@ pub fn request_verification(
 
 pub fn verify(
     deps: DepsMut,
-    env: Env,
+    _env: Env,
     info: MessageInfo,
     request_id: u64,
     approved: bool,
@@ -102,7 +104,7 @@ pub fn verify(
     let request = REQUESTS.load(deps.storage, request_id)?;
 
     let mint_msg = WasmMsg::Execute {
-        contract_addr: must_get_nft_address(state)?.to_string(),
+        contract_addr: must_get_ownernft_address(state)?.to_string(),
         msg: to_binary(&ExecuteMsgNFT::Mint(MintMsg {
             token_id: request.twitter_handle,
             owner: request.owner_address.into_string(),
@@ -137,6 +139,26 @@ pub fn change_verifier(
     Ok(Response::new()
         .add_attribute("action", "change_verifier")
         .add_attribute("new_verifier", new_verifier))
+}
+
+pub fn set_ownernfts_address(
+    deps: DepsMut,
+    info: MessageInfo,
+    ownernfts_address: String,
+) -> Result<Response, ContractError> {
+    let mut state = STATE.load(deps.storage)?;
+
+    if info.sender != state.verifier {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    state.ownernfts_address = Some(deps.api.addr_validate(&ownernfts_address)?);
+
+    STATE.save(deps.storage, &state);
+
+    Ok(Response::new()
+        .add_attribute("action", "change_verifier")
+        .add_attribute("new_ownernfts_address", ownernfts_address))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

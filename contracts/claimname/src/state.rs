@@ -7,7 +7,7 @@ use cw_storage_plus::{Item, Map};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct State {
-    pub nft_address: Option<Addr>,
+    pub ownernfts_address: Option<Addr>,
     pub verifier: Addr,
     pub next_request_id: u64,
 }
@@ -16,7 +16,7 @@ pub struct State {
 pub struct VerificationRequest {
     pub twitter_handle: String,
     pub owner_address: Addr,
-    pub tweet_id: u64,
+    pub tweet_id: String,
     pub expiration_time: Timestamp,
 }
 

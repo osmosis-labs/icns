@@ -12,9 +12,9 @@ use crate::{
     ContractError,
 };
 
-pub fn must_get_nft_address(state: State) -> Result<Addr, ContractError> {
+pub fn must_get_ownernft_address(state: State) -> Result<Addr, ContractError> {
     state
-        .nft_address
+        .ownernfts_address
         .ok_or(ContractError::NFTContractNotInitialized {})
 }
 
